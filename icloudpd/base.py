@@ -456,19 +456,16 @@ def main(
             file_size = os.stat(download_path).st_size
             version = photo.versions[download_size]
             photo_size = version["size"]
-            if file_size != photo_size:
-                download_path = ("-%s." % photo_size).join(
-                    download_path.rsplit(".", 1)
-                )
-                logger.set_tqdm_description(
-                    "%s deduplicated." % truncate_middle(download_path, 96)
-                )
-                file_exists = os.path.isfile(download_path)
-            if file_exists:
+            if file_size < photo_size:
+                logger.info("Wayne: Deleting size check less file %s!", download_path)
+                os.remove(download_path)
+                file_exists = False
+            else:
                 counter.increment()
                 logger.set_tqdm_description(
                     "%s already exists." % truncate_middle(download_path, 96)
                 )
+                file_exists = True
 
         if not file_exists:
             counter.reset()
@@ -522,20 +519,17 @@ def main(
                     if lp_file_exists:
                         lp_file_size = os.stat(lp_download_path).st_size
                         lp_photo_size = version["size"]
-                        if lp_file_size != lp_photo_size:
-                            lp_download_path = ("-%s." % lp_photo_size).join(
-                                lp_download_path.rsplit(".", 1)
-                            )
-                            logger.set_tqdm_description(
-                                "%s deduplicated." %
-                                truncate_middle(
-                                    lp_download_path, 96))
-                            lp_file_exists = os.path.isfile(lp_download_path)
-                        if lp_file_exists:
+                        if lp_file_size < lp_photo_size:
+                            logger.info("Wayne: Deleting size check less lp_file %s!", lp_download_path)
+                            os.remove(download_path)
+                            lp_file_exists = False
+                        else:
                             logger.set_tqdm_description(
                                 "%s already exists."
                                 % truncate_middle(lp_download_path, 96)
                             )
+                            lp_file_exists = True
+
                     if not lp_file_exists:
                         truncated_path = truncate_middle(lp_download_path, 96)
                         logger.set_tqdm_description(

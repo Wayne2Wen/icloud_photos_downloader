@@ -66,6 +66,7 @@ def download_media(icloud, photo, download_path, size):
             break
 
         except (ConnectionError, socket.timeout, PyiCloudAPIResponseError) as ex:
+            logger.info("Wayne: Downloading file ConnectionError %s" % download_path)
             if "Invalid global session" in str(ex):
                 logger.tqdm_write(
                     "Session error, re-authenticating...",
@@ -88,6 +89,7 @@ def download_media(icloud, photo, download_path, size):
                 time.sleep(wait_time)
 
         except IOError:
+            logger.info("Wayne: Downloading file IOError %s" % download_path)
             logger.error(
                 "IOError while writing file to %s! "
                 "You might have run out of disk space, or the file "
@@ -96,8 +98,13 @@ def download_media(icloud, photo, download_path, size):
             )
             break
     else:
+        logger.info("Wayne: Downloading file other Error %s" % download_path)
         logger.tqdm_write(
             "Could not download %s! Please try again later." % photo.filename
         )
+
+    if os.path.exists(download_path):
+        logger.info("Wayne: Deleting unknown Error file %s!", download_path)
+        os.remove(download_path)
 
     return False
