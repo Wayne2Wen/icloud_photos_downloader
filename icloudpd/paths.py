@@ -17,7 +17,7 @@ def filename_with_size(media, size):
     filename = media.filename
     match = re.match(constants.MATCH_RE, filename)
     if not match:
-        version = media.versions[size if size in ["original", "thumb"] else "original"]
+        version = media.versions[size if size in ["original"] else "original"]
         photo_size = version["size"]
         photo_size_suffix = "-%s." % photo_size
         if not (photo_size_suffix in filename):
